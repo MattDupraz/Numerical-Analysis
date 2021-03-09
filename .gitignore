@@ -1,0 +1,12 @@
+*.aux
+*.fdb_latexmk
+*.fls
+*.log
+*.out
+*.pdf
+*.toc
+*.bbl
+*.blg
+*.syntex.gz
+
+octave-workspace
