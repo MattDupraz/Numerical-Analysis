@@ -65,8 +65,8 @@ neighbourhood of $x\in \R$
       derivative can be approximately bounded by:
       \begin{align*}
          &\Bigg|\frac{f(x+h)(1 + \delta_1) - f(x)(1 + \delta_2)}{h}
-         - f'(x)\Bigg| = \\
-         &= 
+         - f'(x)\Bigg| \leq \\
+         &\leq 
          \Bigg|\frac{f(x+h)(1 + \delta_1) - f(x)(1 + \delta_2)}{h} -
          \frac{f(x+h) - f(x)}{h}\Bigg| \\
          &~~~+ \Bigg|\frac{f(x+h) - f(x)}{h} - f'(x)\Bigg| \\
@@ -79,18 +79,18 @@ neighbourhood of $x\in \R$
       \end{equation}
       We can find the minimum by computing the derivative:
       \begin{equation}
-         err'(h) = -|f(x)|\frac{u}{h^2} + \frac{1}{2}|f''(x)|
+         err'(h) = -2|f(x)|\frac{u}{h^2} + \frac{1}{2}|f''(x)|
       \end{equation}
       So if $f''(x) \neq 0$, we get that
       \begin{equation}
-         err'(h) = 0 \iff h^2 = 2u\left|\frac{f(x)}{f''(x)}\right|
+         err'(h) = 0 \iff h^2 = 4u\left|\frac{f(x)}{f''(x)}\right|
       \end{equation}
       And so in theory we get the smallest error when
-      $h_{min} = \sqrt{2u\left|\frac{f(x)}{f''(x)}\right|}$.
+      $h_{min} = 2\sqrt{u\left|\frac{f(x)}{f''(x)}\right|}$.
       If $f''(x) = 0$, the function $err$ does not admit a minimum.
       For the specific case of $f = \exp$, $x = 1$ and
       $u = \frac{1}{2}2^{1 - 53}$ (matlab uses double precision floating
-      point numbers), we get $h \approx 1.5 \times 10^{-8}$.
+      point numbers), we get $h \approx 2.1 \times 10^{-8}$.
       Indeed, when we graph the real and theoretical errors against $h$ on a single plot, we
       get the following figure:\\
       \includegraphics[width=0.6\textwidth]{figure}
