@@ -27,8 +27,20 @@ errs1 = rel_err(xs1, rxs1);
 errs2 = rel_err(xs2, rxs2);
 
 % Evaluating the polynomials at the calculated roots
-evs1 = xs1.^2 + ps.*xs1 + qs;
-evs2 = xs2.^2 + ps.*xs2 + qs;
+evs1 = qs + ps.*xs1 + xs1.^2;
+evs2 = qs + ps.*xs2 + xs2.^2;
+
+% The bad root is smaller in magnitude
+for i=1:3
+	if (abs(xs1(i)) >= abs(xs2(i)))
+		recov(i) = qs(i)/xs1(i);
+	else 
+		recov(i) = qs(i)/xs2(i);
+	end
+end
+
+% Evualuationg polynomial at x_bad
+ev_recov = qs + ps.*recov + recov.^2;
 
 % Displaying everything in a readable manner
 disp('--------------------')
@@ -54,15 +66,12 @@ for i=1:3
 		i, evs1(i), evs2(i));
 	disp(str);
 
-	% The bad root is smaller in magnitude
-	if (abs(xs1(i)) >= abs(xs2(i)))
-		recov = qs(i)/xs1(i);
-	else 
-		recov = qs(i)/xs2(i);
-	end
-
 	str = sprintf('Recovered bad root of %i from good root: %d',...
-		i, recov);
+		i, recov(i));
+	disp(str);
+
+	str = sprintf('Evaluation of %i at revovered bad root: %d',...
+		i, ev_recov(i));
 	disp(str);
 
 	disp('--------------------')
