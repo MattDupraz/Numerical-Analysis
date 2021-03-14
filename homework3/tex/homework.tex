@@ -1,0 +1,129 @@
+\documentclass{article}
+
+\usepackage{amsmath, amsfonts, amssymb}
+\usepackage{fancyvrb}
+
+\title{Homework 3}
+\author{Matthew Dupraz}
+
+\begin{document}
+
+\maketitle
+
+\subsection*{(a)}
+
+\textbf{Code for myexp.m}:
+\begin{Verbatim}[frame=single]
+function sn = myexp(x)
+% Initialize sum at s_0 = 1
+n = 0;
+sn = 1;
+% Add next term in sum, as long as the value of next term
+                                              is large enough
+while sn == 0 || abs(x)^(n+1)/(factorial(n+1) * abs(sn))
+                                                   > 10^(-16)
+   n = n + 1;
+   sn = sn + x^n/factorial(n);
+end
+
+\end{Verbatim}
+\subsection*{(b)}
+
+\textbf{Output from main.m (first half)}:
+\begin{Verbatim}[frame=single]
+myexp(-20) = -8.47432e-09
+Relative error: 5.11144
+---
+myexp(-0.5) = 0.606531
+Relative error: 1.83045e-16
+\end{Verbatim}
+
+While the calculated value for $\exp(-0.5)$ is very precise,
+we can see that the calculated value for $\exp(-20)$ not only has a high
+relative error, but is also negative, which is not even in the range of $\exp$.
+We can explain this through cancellation - if we calculate a sum
+$\sum_{i=0}^n a_i$, then we get some error for each operation we do, so the
+calculated value of the sum would actually be
+\begin{equation}
+	(\cdots((a_0 + a_1)(1 + \delta_1) + a_2)(1+\delta_2)\cdots +
+	a_n)(1+\delta_n),
+\end{equation}
+where $|\delta_i| \leq u \forall i \in \{1, \dots, n\}$.
+We can rewrite this as 
+\begin{equation}
+	a_0\prod_{j=1}^{n}
+	(1 + \delta_j) + \sum_{i=1}^{n}a_i\prod_{j=1}^{n + 1 - i}(1 + \delta_j).
+\end{equation}
+The absolute error we would then get is
+\begin{equation}
+	a_0\left(\prod_{j=1}^{n}
+	(1 + \delta_j) - 1\right) + \sum_{i=1}^{n}a_i\left(\prod_{j=1}^{n + 1 - i}
+	(1 + \delta_j) - 1\right).
+\end{equation}
+In our case we are computing $\exp(-20)$, so $a_i = x^i/i!$, in particular, for
+example $a_{20} \approx -4.3\mathrm{e}{+7}$,
+so this term could contribute an error which could be as large as for example
+\begin{equation}
+|a_{20}\times u| \approx 4.3\mathrm{e}{+7} 2^{-53}
+\approx 9.5\mathrm{e}{-8} \approx 4.8\mathrm{e}{-9}
+\end{equation}
+This error is very large compared to the expected sum which should converge to
+$\exp(-20) \approx 2\mathrm{e}{-9}$, so this explains why the calculated sum
+has a very big relative error.
+
+\subsection*{(c)}
+
+\textbf{Output from main.m (second half)}:
+\begin{Verbatim}[frame=single]
+Calculating relative errors for myexp2(x):
+x = -20: 1.043430033174047e-14
+x = -18: 5.865766577052833e-15
+x = -16: 5.527514594362839e-15
+x = -14: 1.782629539594293e-15
+x = -12: 3.584325437040343e-15
+x = -10: 5.223999827135927e-15
+x = -8: 2.747166956792859e-15
+x = -6: 1.749593497392117e-15
+x = -4: 1.515403081718387e-15
+x = -2: 6.152625158459809e-16
+\end{Verbatim}
+\textbf{Code from main.m}:
+\begin{Verbatim}[frame=single]
+% Symbolic function, which calculates
+	                      the relative error of a given
+% method for computing exp(x) at some given point
+rel_err = @(f, x) abs(f(x) - exp(x))/exp(x);
+
+% Display the calculated value and relative error of myexp
+fprintf('myexp(-20) = %g\n', myexp(-20));
+fprintf('Relative error: %g\n', rel_err(@myexp, -20));
+
+disp('---')
+
+fprintf('myexp(-0.5) = %g\n', myexp(-0.5));
+fprintf('Relative error: %g\n', rel_err(@myexp, -0.5));
+
+% Display the relative errors of myexp2 at a collection of points
+disp('---')
+disp('Calculating relative errors for myexp2(x):')
+for x=-20:2:-2
+   fprintf('x = %d: %.16g\n', x, rel_err(@myexp2, x));
+end
+\end{Verbatim}
+\textbf{Code from myexp2.m}:
+\begin{Verbatim}[frame=single]
+function y = myexp2(x)
+
+% Compute m such that abs(x/2^m) <= 1
+m = ceil(log2(abs(x)));
+z = x/2^m;
+
+% Calculate exp(x/2^m)
+y = myexp(z);
+
+% Square m times to obtain exp(x)
+for i=1:m
+   y = y^2;
+end
+\end{Verbatim}
+\end{document}
