@@ -1,0 +1,92 @@
+\documentclass{article}
+
+\usepackage{amsmath, amsfonts, amssymb}
+\usepackage{graphicx}
+\usepackage{fancyvrb}
+
+\title{Homework 9}
+\author{Matthew Dupraz}
+
+\begin{document}
+
+\maketitle
+
+\subsection*{(a)}
+
+Let $x_i = ih$ for $i \in \{0, \dots, N\}$ and $h = 1/N$.
+We will apply the composite trapezoidal rule to approximate
+the solution at each $x_i$:
+\begin{align*}
+	\int_0^1 k(x_i, y)u(y) dy &\approx
+	Q^{(1)}_h[k(x_i, \cdot)u(\cdot)]\\
+	&= \sum_{j=0}^{N-1}\frac{x_{j+1} - x_j}{2}[
+	k(x_i, x_j)u(x_j) + k(x_i, x_{j+1}u(x_{j+1}))]\\
+	&= \frac{h}{2}\sum_{j=0}^{N-1}[
+	k(x_i, x_j)u(x_j) + k(x_i, x_{j+1}u(x_{j+1}))]\\
+	&= \frac{h}{2}k(x_i, 0)u(0) + \frac{h}{2}k(x_i,1)u(1)
+	+ h\sum_{j=1}^{N-1}k(x_i, x_j)u(x_j)
+\end{align*}
+
+Consider $\vec{f} = [f(x_0, \dots, f(x_N)]^T$, we'll find values
+$\vec(u) = [u(x_0), \dots, u(x_N)]^T$ such that
+\begin{equation*}
+	Q_h^{(1)}[k(x_i, \cdot)u(\cdot)] = f(x_i) ~~
+	\forall i \in \{0, \dots, N\}
+\end{equation*}
+If we let
+\begin{equation*}
+	A = \begin{bmatrix}
+		\frac{h}{2}k(x_1, 0) & hk(x_1, x_1) & \cdots &
+		hk(x_1, x_{N-1}) & \frac{h}{2} k(x_1, x_N)\\
+		\vdots & \vdots & & \vdots & \vdots\\
+		\frac{h}{2}k(x_N, 0) & hk(x_N, x_1) & \cdots &
+		hk(x_N, x_{N-1}) & \frac{h}{2} k(x_N, x_N)\\
+	\end{bmatrix},
+\end{equation*}
+then using the formula for the composite trapezoidal rule we found
+above, this is equivalent to $A\vec{u} = \vec{f}$
+
+\subsection*{(b)}
+We can see that if we let
+\begin{equation*}
+	D =
+	\begin{bmatrix}
+		\frac{h}{2} & & & & \\
+		 & h & & & \\
+		 & & \ddots & & \\
+		 & & & h & \\
+		 & & & & \frac{h}{2}
+	\end{bmatrix},
+\end{equation*}
+then $A = KD$. And so
+\begin{equation*}
+	A\vec{u} = \vec{f} \iff KD\vec{u} = \vec{f}
+		\iff D\vec{u} = K^{-1}\vec{f}.
+\end{equation*}
+By definition of $f_z$ and the formula for the composite trapezoidal
+rule we found in part (a), we have that
+\begin{equation*}
+	f_z = [k(z, x_0)~\cdots~k(z, x_N)]D\vec{u}
+\end{equation*}
+and so we conclude
+\begin{equation*}
+	f_z = [k(z, x_0)~\cdots~k(z, x_N)]K^{-1}\vec{f}
+\end{equation*}
+
+\subsection*{(c)}
+Let $i \in \{0, \dots, N\}$. If $K$ is invertible, then
+\begin{equation*}
+	[k(x_i, x_0)~\cdots~k(x_i, x_N)]K^{-1} = \vec{e_i}
+\end{equation*}
+since $[k(x_i, x_0)~\cdots~k(x_i, x_N)]$ is the $i$-th column of
+the matrix $K$.
+Hence
+\begin{equation*}
+	f_{x_i} = [k(x_i, x_0)~\cdots~k(x_i, x_N)]K^{-1}\vec{f}
+	= \vec{e_i}\cdot\vec{f} = f_i = f(x_i)
+\end{equation*}
+
+\subsection*{(f)}
+
+
+\end{document}
