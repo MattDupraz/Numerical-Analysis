@@ -1,0 +1,162 @@
+\documentclass{article}
+
+\usepackage{amsmath, amssymb, amsfonts}
+\usepackage{graphicx}
+\usepackage{fancyvrb}
+
+\newcommand{\inner}[2]{\left\langle #1, #2 \right\rangle}
+\renewcommand{\vec}{\mathbf}
+
+\author{Matthew Dupraz}
+\title{Homework 10}
+
+\begin{document}
+\maketitle
+
+\subsection*{(a)}
+We will show that for every $k, l  \in \{0, 1, \dots, n-1\}$
+it holds that
+\begin{equation*}
+	\sum_{j=0}^{n-1}\omega_n^{-kj}\omega_n^{lj} = 
+	\begin{cases}
+		0 & \text{ if } k \neq l\\
+		n & \text{ if } k = l
+	\end{cases}
+\end{equation*}
+Suppose $k \neq j$, then we can write
+\begin{equation*}
+	\sum_{j=0}^{n-1}\omega_n^{-kj}\omega_n^{lj} =
+	\frac{1 - \omega_n^{-kn}\omega_n^{ln}}
+		{1 - \omega_n^{-k}\omega_n^l} = 0
+\end{equation*}
+because $\omega_n^n = 1$. If $k = j$, then
+\begin{equation*}
+	\sum_{j=0}^{n-1}\omega_n^{-kj}\omega_n^{lj} =
+	\sum_{j=0}^{n-1}1 = n
+\end{equation*}
+which is what we wanted to show.
+
+\subsection*{(b)}
+
+We have that
+\begin{align*}
+	\inner{\hat{x}}{\hat{y}} &= 
+	\inner{\frac{1}{n}F_nx}{\frac{1}{n}F_n y}\\
+	&= \frac{1}{n}\inner{x}{\left(\frac{1}{\sqrt{n}}F_n\right)^*
+	\frac{1}{\sqrt{n}}F_n y}\\
+	&= \frac{1}{n}\inner{x}{y}
+\end{align*}
+We used the fact that $\frac{1}{\sqrt{n}}F_n$ is unitary.
+Hence $\inner{x}{y} = n\inner{\hat{x}}{\hat{y}}$
+We deduce that 
+\begin{equation*}
+	\|x\|_2 = \sqrt{\inner{x}{x}} =
+	\sqrt{n\inner{\hat{x}}{\hat{x}}}
+	= \sqrt{n}\|\hat{x}\|_2
+\end{equation*}
+	
+\subsection*{(c)}
+
+We have that
+\begin{align*}
+	\hat{z_k} &= \frac{1}{n}\sum_{j=0}^{n-1}z_j\omega_n^{-kj}\\
+	&= \frac{1}{n}\sum_{j=0}^{n-1}\sum_{i=0}^{n-1}
+	x_i y_{j-i}\omega_n^{-kj}\\
+	&= \frac{1}{n}\sum_{j=0}^{n-1}\sum_{i=0}^{n-1}
+	x_i\omega_n^{-ki} y_{j-i}\omega_n^{-k(j - i)}\\
+	&= \frac{1}{n}\sum_{i=0}^{n-1}x_i\omega_n^{-ki}
+	\sum_{j=0}^{n-1}
+	 y_{j-i}\omega_n^{-k(j - i)}\\
+	&= \frac{1}{n}\sum_{i=0}^{n-1}x_i\omega_n^{-ki}
+	\sum_{j=-i}^{n-1-i}
+	 y_j\omega_n^{-kj}\\
+	&= \frac{1}{n}\sum_{i=0}^{n-1}x_i\omega_n^{-ki}
+	\left(\sum_{j=-i}^{-1} y_j\omega_n^{-kj} + 
+	\sum_{j=0}^{n-1-i} y_j\omega_n^{-kj}\right)\\
+	&= \frac{1}{n}\sum_{i=0}^{n-1}x_i\omega_n^{-ki}
+	\left(\sum_{j=-i}^{-1} y_{j + n}\omega_n^{-k(j + n)} + 
+	\sum_{j=0}^{n-1-i} y_j\omega_n^{-kj}\right)\\
+	&= \frac{1}{n}\sum_{i=0}^{n-1}x_i\omega_n^{-ki}
+	\left(\sum_{j=n-i}^{n-1} y_j\omega_n^{-kj} + 
+	\sum_{j=0}^{n-1-i} y_j\omega_n^{-kj}\right)\\
+	&= \frac{1}{n}\sum_{i=0}^{n-1}x_i\omega_n^{-ki}
+	\sum_{j=0}^{n-1} y_j\omega_n^{-kj}\\
+	&= n\hat{x}_k\hat{y}_k
+\end{align*}
+which is what we wanted to show.
+
+\subsection*{(d)}
+
+Denote $\tilde{\vec{x}}$ the value returned by \texttt{fft}
+in \textsc{Matlab}, then since $\tilde{\vec{x}} = F_n\vec{x}$
+and $\hat{\vec{x}} = \frac{1}{n}F_n\vec{x}$, it follows that
+$\hat{\vec{x}} = \frac{1}{n}\tilde{\vec{x}}$.
+In particular, the equation we obtain in (c) becomes
+$\tilde{z}_k = \tilde{x}_k\tilde{y}_k$
+
+In \textsc{Matlab}, I wrote the following implementation:
+\begin{Verbatim}[frame=single,
+	label=\textsc{Matlab} code - convolution.m]
+function z=convolution(x, y)
+	xhat = fft(x);
+	yhat = fft(y);
+	z = ifft(xhat .* yhat);
+\end{Verbatim}
+For $\vec{x} = (1, \dots, 10)^T$ and
+$\vec{y} = (10, \dots, 1)^T$,
+the method yields
+\begin{equation*}
+	\vec{z} = (340, 305, 280, 265, 260, 265, 280, 305, 340, 385)^T
+\end{equation*}
+
+\subsection*{(e)}
+
+Let $\vec{x}, \vec{y} \in \mathbb{R}^n$, and let 
+\begin{equation*}
+	p_{\vec{x}}(t) = x_0 + x_1t + \dots + x_{n-1}t^{n-1},~~~
+	p_{\vec{y}}(t) = y_0 + y_1t + \dots + y_{n-1}t^{n-1}
+\end{equation*}
+then
+\begin{equation*}
+	p_{\vec{x}}(t)p_{\vec{y}}(t)
+	= \sum_{i=0}^{n-1}x_it^i\sum_{j=0}^{n-1}y_jt^j
+	= \sum_{i=0}^{n-1}\sum_{j=0}^{n-1}x_iy_jt^{i+j}
+\end{equation*}
+Hence the coefficient of $t^k$ is
+\begin{equation*}
+	\sum_{\substack{i+j=k \\ i,j \leq n-1}}x_iy_j
+	= \sum_{i = 0}^{2n-2}x_iy_{k-i}
+	\mathbf{1}\{i \leq k, i\leq n-1\}
+	= \sum_{i = 0}^{2n - 2}x_i'y_{k-i}'
+	= (\vec{x'}*\vec{y'})_k
+\end{equation*}
+where we set $\vec{x'}, \vec{y'} \in \mathbb{R}^{2n-1}$
+to be the vectors $\vec{x},\vec{y}$ padded with zeros.
+It follows that
+\begin{equation*}
+	p_{\vec{x}}(t)p_{\vec{y}}(t) = p_{\vec{z}}(t),
+\end{equation*}
+where $\vec{z} = (\vec{x'} * \vec{y'})$.
+Hence using (d), we can compute the value of $\vec{z}$ in
+$O(n\log_2 n)$ complexity, since \texttt{fft} and
+\texttt{ifft} are both of complexity $O(n\log_2 n)$.
+
+In \textsc{Matlab} I wrote the following implementation, using
+the method from (d):
+\begin{Verbatim}[frame=single,
+	label=\textsc{Matlab} code - poly\_product.m]
+function z=poly_product(x, y)
+	n = size(x)(1);
+	w = zeros(n-1, 1);
+	z = convolution([x; w], [y; w]);
+\end{Verbatim}
+For the polynomials
+\begin{equation*}
+	p_{\vec{x}}(t) = 1 + t + 2t^2 + 3t^3,~~~
+	p_{\vec{y}}(t) = 3 + 2t + t^2 + t^3
+\end{equation*}
+the method yields
+\begin{equation*}
+	p_{\vec{z}}(t) = 3 + 5t + 9t^2 + 15t^3 + 9t^4 + 5t^5 + 3t^6
+\end{equation*}
+\end{document}
